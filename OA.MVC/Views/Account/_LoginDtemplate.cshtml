@@ -1,0 +1,288 @@
+﻿
+<script type="x-template" id="loginbox">
+    <div class="card mt-3 shadow-sm">
+        <h5 class="card-header">系统登陆</h5>
+        <div class="card-body ">
+            <el-form :model="loginModel" :rules="rules" ref="loginModel" label-width="100px" class="demo-ruleForm" v-on:submit.native.prevent label-position="left">
+                <el-form-item label="账号" prop="account">
+                    <el-input v-model="loginModel.account"></el-input>
+                </el-form-item>
+                <el-form-item label="密码" prop="password">
+                    <el-input v-model="loginModel.password" show-password></el-input>
+                </el-form-item>
+                <el-form-item label="保存登录状态" prop="remember" class="mb-0">
+                    <el-switch v-model="loginModel.remember"></el-switch>
+                </el-form-item>
+                <div class="text-right">
+                    <button type="button" class="btn btn-secondary">清空</button>
+                    <button type="button" class="btn btn-primary " v-on:click="submit('loginModel')">用户登录</button>
+                </div>
+                <p class="mb-0"><a href="#" v-on:click.pervent="jumpto('register-box')">注册账号</a></p>
+                <p class="mb-0"><a href="#" v-on:click.pervent="jumpto('forgot-box')">忘记密码</a></p>
+            </el-form>
+        </div>
+    </div>
+</script>
+<script>
+    Vue.component("login-box", {
+        template: "#loginbox",
+        data() {
+            return {
+                loginModel: {
+                    account: '',
+                    password: '',
+                    remember: false,
+                },
+                rules: {
+                    account: ValidFormat.account,
+                    password: ValidFormat.password
+                }
+            }
+        },
+        methods: {
+            submit: function (name) {
+                this.$refs[name].validate((valid) => {
+                    if (valid) {
+                        PostPromise(loginAPI, this.loginModel).then(data => {
+                            if (data.status) {
+                                this.$message({
+                                    showClose: true,
+                                    message: data.message,
+                                    type: 'success',
+                                    onClose: elf => {
+                                        window.location.reload();
+                                    }
+                                });
+                            } else {
+                                this.$message.error(data.message);
+                            }
+                        });
+                    } else {
+                        return false;
+                    }
+                });
+            },
+            jumpto: function (url) {
+                myapp.view = url;
+            },
+        },
+    });
+</script>
+@* register template*@
+<script type="x-template" id="registerbox">
+    <div class="card mt-3 shadow-sm">
+        <div class="card-header">
+            <el-page-header v-on:back="goBack" content="注册新账号">
+            </el-page-header>
+        </div>
+
+        <div class="card-body ">
+            <el-form :model="registerModel" :rules="rules" ref="registerModel" label-width="100px" class="demo-ruleForm" v-on:submit.native.prevent label-position="left">
+                <el-form-item label="账户名" prop="account">
+                    <el-input v-model="registerModel.account"></el-input>
+                </el-form-item>
+                <el-form-item label="真实姓名" prop="displayName">
+                    <el-input v-model="registerModel.displayName"></el-input>
+                </el-form-item>
+                <el-form-item label="电话号码" prop="phone">
+                    <el-input v-model="registerModel.phone"></el-input>
+                </el-form-item>
+                <el-form-item label="电子邮件" prop="email">
+                    <el-input v-model="registerModel.email"></el-input>
+                </el-form-item>
+                <el-form-item label="密码" prop="password">
+                    <el-input v-model="registerModel.password" show-password></el-input>
+                </el-form-item>
+                <el-form-item label="确认密码" prop="repassword">
+                    <el-input v-model="registerModel.repassword" show-password></el-input>
+                </el-form-item>
+
+                <div class="text-right">
+                    <button type="button" class="btn btn-secondary">清空</button>
+                    <button type="button" class="btn btn-primary " v-on:click="submit('registerModel')">注册新用户</button>
+                </div>
+            </el-form>
+        </div>
+    </div>
+</script>
+@* register jscode*@
+<script>
+    Vue.component("register-box", {
+        template: "#registerbox",
+        data() {
+            var validatePass2 = (rule, value, callback) => {
+                if (value === '') {
+                    callback(new Error('请再次输入密码'));
+                } else if (value !== this.registerModel.password) {
+                    callback(new Error('两次输入密码不一致!'));
+                } else {
+                    callback();
+                }
+            };
+            return {
+                registerModel: {
+                    displayName: "",
+                    account: '',
+                    phone: "",
+                    email: "",
+                    password: '',
+                    repassword: "",
+                },
+                rules: {
+                    phone: ValidFormat.required,
+                    displayName: ValidFormat.required,
+                    email: ValidFormat.required,
+                    account: ValidFormat.account,
+                    password: ValidFormat.password,
+                    repassword: [{ validator: validatePass2, trigger: 'blur' }],
+                }
+            }
+        },
+        methods: {
+            submit: function (name) {
+                this.$refs[name].validate((valid) => {
+                    if (valid) {
+                        PostPromise(registerAPI, this.registerModel).then(data => {
+                            if (data.status) {
+                                this.$message({
+                                    showClose: true,
+                                    message: data.message,
+                                    type: 'success',
+                                    onClose: elf => {
+                                        window.location.reload();
+                                    }
+                                });
+                            } else {
+                                this.$message.error(data.message);
+                            }
+                        });
+                    } else {
+                        return false;
+                    }
+                });
+            },
+            goBack: function () {
+                myapp.view = "login-box";
+            }
+        },
+    });
+</script>
+@* forgot template*@
+<script type="x-template" id="forgotbox">
+    <div class="card mt-3 shadow-sm">
+        <div class="card-header">
+            <el-page-header v-on:back="goBack" content="忘记密码?">
+            </el-page-header>
+        </div>
+
+        <div class="card-body ">
+            <el-form :model="forgotClaimModel" :rules="rules" ref="forgotClaimModel" label-width="100px" class="demo-ruleForm" v-on:submit.native.prevent label-position="left">
+                <el-form-item label="账户名" prop="account">
+                    <el-input v-model="forgotClaimModel.account"></el-input>
+                </el-form-item>
+                <el-form-item label="电话号码" prop="phone">
+                    <el-input v-model="forgotClaimModel.phone"></el-input>
+                </el-form-item>
+                <el-form-item label="电子邮件" prop="email">
+                    <el-input v-model="forgotClaimModel.email"></el-input>
+                </el-form-item>
+                <button type="button" class="btn btn-primary mb-3" v-on:click="claim('forgotClaimModel')">验证信息</button>
+            </el-form>
+            <el-divider content-position="left">通过验证后修改密码</el-divider>
+            <el-form :disabled="passClaim" :model="passwordModel" :rules="rules" ref="passwordModel" label-width="100px" class="demo-ruleForm" v-on:submit.native.prevent label-position="left">
+
+                <el-form-item label="密码" prop="password">
+                    <el-input v-model="passwordModel.password" show-password></el-input>
+                </el-form-item>
+                <el-form-item label="确认密码" prop="repassword">
+                    <el-input v-model="passwordModel.repassword" show-password></el-input>
+                </el-form-item>
+                <el-button type="primary" v-on:click="submit('passwordModel')">修改密码</el-button>
+            </el-form>
+        </div>
+    </div>
+</script>
+@* forgot jscode*@
+<script>
+    Vue.component("forgot-box", {
+        template: "#forgotbox",
+        data() {
+            var validatePass2 = (rule, value, callback) => {
+                if (value === '') {
+                    callback(new Error('请再次输入密码'));
+                } else if (value !== this.passwordModel.password) {
+                    callback(new Error('两次输入密码不一致!'));
+                } else {
+                    callback();
+                }
+            };
+            return {
+                passClaim: true,
+                forgotClaimModel: {
+                    account: '',
+                    phone: "",
+                    email: "",
+                },
+                passwordModel: {
+                    uid: "",
+                    password: '',
+                    repassword: "",
+                },
+                rules: {
+                    phone: ValidFormat.required,
+                    email: ValidFormat.required,
+                    account: ValidFormat.account,
+                    password: ValidFormat.password,
+                    repassword: [{ validator: validatePass2, trigger: 'blur' }],
+                }
+            }
+        },
+        methods: {
+            submit: function (name) {
+                this.$refs[name].validate((valid) => {
+                    if (valid) {
+                        PutPromise(forgotAPI, this.passwordModel).then(data => {
+                            if (data.status) {
+                                this.$message({
+                                    showClose: true,
+                                    message: data.message,
+                                    type: 'success',
+                                    onClose: elf => {
+                                        window.location.reload();
+                                    }
+                                });
+                            } else {
+                                this.$message.error(data.message);
+                            }
+                        });
+                    } else {
+                        return false;
+                    }
+                });
+            },
+            claim: function (name) {
+                this.$refs[name].validate((valid) => {
+                    if (valid) {
+                        PostPromise(forgotAPI, this.forgotClaimModel).then(data => {
+                            if (data.status) {
+                                this.$message("信息验证通过");
+                                this.passwordModel.uid = data.message;
+                                this.passClaim = false;
+                            } else {
+                                this.$message.error(data.message);
+                            }
+                        })
+                    } else {
+                        return false;
+                    }
+                });
+            },
+            goBack: function () {
+                myapp.view = "login-box";
+            }
+        },
+    });
+</script>
+
+
+

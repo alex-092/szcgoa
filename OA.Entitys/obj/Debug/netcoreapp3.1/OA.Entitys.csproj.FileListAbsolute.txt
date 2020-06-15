@@ -1,0 +1,15 @@
+D:\MyCode\SZCGOA.v2\OA.Entitys\bin\Debug\netcoreapp3.1\OA.Entitys.deps.json
+D:\MyCode\SZCGOA.v2\OA.Entitys\bin\Debug\netcoreapp3.1\OA.Entitys.dll
+D:\MyCode\SZCGOA.v2\OA.Entitys\bin\Debug\netcoreapp3.1\OA.Entitys.pdb
+D:\MyCode\SZCGOA.v2\OA.Entitys\bin\Debug\netcoreapp3.1\CommonLib.dll
+D:\MyCode\SZCGOA.v2\OA.Entitys\bin\Debug\netcoreapp3.1\CommonLib.pdb
+D:\MyCode\SZCGOA.v2\OA.Entitys\obj\Debug\netcoreapp3.1\OA.Entitys.csprojAssemblyReference.cache
+D:\MyCode\SZCGOA.v2\OA.Entitys\obj\Debug\netcoreapp3.1\OA.Entitys.AssemblyInfoInputs.cache
+D:\MyCode\SZCGOA.v2\OA.Entitys\obj\Debug\netcoreapp3.1\OA.Entitys.AssemblyInfo.cs
+D:\MyCode\SZCGOA.v2\OA.Entitys\obj\Debug\netcoreapp3.1\OA.Entitys.csproj.CopyComplete
+D:\MyCode\SZCGOA.v2\OA.Entitys\obj\Debug\netcoreapp3.1\OA.Entitys.dll
+D:\MyCode\SZCGOA.v2\OA.Entitys\obj\Debug\netcoreapp3.1\OA.Entitys.pdb
+D:\MyCode\SZCGOA.v2\OA.Entitys\bin\Debug\netcoreapp3.1\OA.Entitys.runtimeconfig.json
+D:\MyCode\SZCGOA.v2\OA.Entitys\bin\Debug\netcoreapp3.1\OA.Entitys.runtimeconfig.dev.json
+D:\MyCode\SZCGOA.v2\OA.Entitys\obj\Debug\netcoreapp3.1\OA.Entitys.csproj.CoreCompileInputs.cache
+D:\MyCode\SZCGOA.v2\OA.Entitys\obj\Debug\netcoreapp3.1\OA.Entitys.genruntimeconfig.cache

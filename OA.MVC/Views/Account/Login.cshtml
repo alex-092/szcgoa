@@ -1,0 +1,65 @@
+﻿@{
+    Layout = "_PubLayout";
+}
+<nav class="navbar navbar-light bg-light">
+    <span class="navbar-brand mb-0 ml-2 h1"><i class="el-icon-switch-button"></i> 数字城管信息系统</span>
+</nav>
+
+<div id="myapp" v-cloak class="container-fluid">
+
+
+
+    <div class="row">
+        <div class="col-6">
+            <transition  name="el-fade-in-linear" mode="out-in">
+                <component v-bind:is="view"></component>
+            </transition>
+
+        </div>
+        <div class="col-6">
+            <div class="card mt-3">
+                <h5 class="card-header bg-warning">注意事项</h5>
+                <div class="card-body p-0">
+                    <ul class="list-group p-0 list-group-flush">
+                        <li class="list-group-item" v-for="(item,index) in infoboxData">{{index+1}}.  {{item}}</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section TopHtml{
+    <partial name="_LoginDtemplate" />
+}
+@section Scripts{
+    <script>
+        //api
+        var loginAPI = '@Url.ActionLink("Login")'
+        var registerAPI = '@Url.ActionLink("Register")'
+        var forgotAPI = '@Url.ActionLink("Forgot")'
+        //def info
+        let logigNote = ["数字城管办公系统现在处于有限内部测试中","账号必须通过审核人员审核后才能正常登录"];
+        let registerNote = ["数字城管办公系统现在处于有限内部测试中","请按实际情况填写,"];
+        let forgotNote = ["数字城管办公系统现在处于有限内部测试中", "电话与电子邮件请填写注册时填写的数据,"];
+        let myapp = new Vue({
+            el: "#myapp",
+            data: {
+                view: "login-box",
+                infoboxData:logigNote
+            },
+            watch: {
+                view: function (newv, oldv) {
+                    if (newv == "login-box") {
+                        this.infoboxData = logigNote;
+                    } else if (newv == "register-box") {
+                        this.infoboxData = registerNote;
+                    } else if (newv == "forgot-box") {
+                        this.infoboxData = forgotNote;
+                    }
+                }
+            },
+           
+        });
+    </script>
+
+}

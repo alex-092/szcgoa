@@ -1,0 +1,9 @@
+@inject NavigationManager Navigation
+@code {
+    protected override void OnInitialized()
+    {
+        var temp = Navigation.Uri;
+        Navigation.NavigateTo("http://200.91.5.182:5000/Account/login?returnUrl=http://localhost:5002/signin-oidc");
+
+    }
+}

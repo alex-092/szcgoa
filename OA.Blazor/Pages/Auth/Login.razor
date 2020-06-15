@@ -1,0 +1,73 @@
+﻿@page "/Login"
+@layout SignLayout
+@attribute [Authorize(Roles = "Admin1,Admin2")]
+@inject OA.Blazor.Services.IOaLoginService _login
+@inject HttpContextAccessor _httpcontext
+<div class="mat-layout-grid">
+    <div class="mat-layout-grid-inner">
+        <div class="mat-layout-grid-cell mat-layout-grid-cell-span-6">
+            <div class="card card-primary card-outline">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        <i class="fa fa-sign-in" aria-hidden="true"></i>
+                        登录系统
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <AuthorizeView>
+                        <Authorized>
+                            @foreach (var item in context.User.Claims)
+                            {
+                                <p><b>@item.Type </b>:@item.Value</p>
+                            }
+                        </Authorized>
+                        <NotAuthorized>you r no auth</NotAuthorized>
+                    </AuthorizeView>
+
+                    <EditForm Model="loginModel">
+                        <DataAnnotationsValidator />
+                        <p>
+                            <MatTextField Label="用户名" @bind-Value="loginModel.Account" FullWidth="true" Icon="account_circle" />
+                            <ValidationMessage For="@(() => loginModel.Account)" />
+                        </p>
+                        <p>
+                            <MatTextField Label="密码" @bind-Value="loginModel.Password" Type="password" FullWidth="true" Icon="remove_red_eye" />
+                            <ValidationMessage For="@(() => loginModel.Password)" />
+                        </p>
+                        <p class="pull-right">
+                            <MatButton Outlined="true" @onclick="Reset">清空</MatButton>
+                            <MatButton Raised="true" @onclick="Submit">登录</MatButton>
+                        </p>
+                    </EditForm>
+                </div>
+            </div>
+
+        </div>
+        <div class="mat-layout-grid-cell mat-layout-grid-cell-span-6"></div>
+    </div>
+</div>
+
+@code {
+    LoginInputModel loginModel = new LoginInputModel();
+    private void Reset()
+    {
+        loginModel.Account = "";
+        loginModel.Password = "";
+    }
+    private async Task Submit()
+    {
+        var temp = _httpcontext.HttpContext;
+        var t1 = _httpcontext.HttpContext.Request.Path.ToString();
+        var t2 = _httpcontext.HttpContext.Connection.RemoteIpAddress.ToString();
+    }
+}
+@code {
+    public class LoginInputModel
+    {
+        [Required(ErrorMessage = "账户名不能为空")]
+        public string Account { get; set; }
+        [Required(ErrorMessage = "密码不能为空")]
+        public string Password { get; set; }
+    }
+}
+

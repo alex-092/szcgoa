@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "aEgZA6oubB9EcNEadegDoPfGlSBcx2nDlclsrpnWb4zU+wG+zLH30ryttl0ZS3It7aArMdnNkEvAlfU1ZxNaNQ==",
+  "success": true,
+  "projectFilePath": "D:\\MyCode\\SZCGOA.v2\\CommonLib\\CommonLib.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\alex_\\.nuget\\packages\\microsoft.extensions.dependencyinjection.abstractions\\3.1.4\\microsoft.extensions.dependencyinjection.abstractions.3.1.4.nupkg.sha512",
+    "C:\\Users\\alex_\\.nuget\\packages\\microsoft.aspnetcore.app.ref\\3.1.2\\microsoft.aspnetcore.app.ref.3.1.2.nupkg.sha512"
+  ],
+  "logs": []
+}

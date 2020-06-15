@@ -1,0 +1,235 @@
+﻿
+    <div class="row" id="myapp" v-cloak>
+        <el-dialog :title="menuDialogTitle" :visible.sync="dialogVisible"  width="30%" :close-on-click-modal="menuModalSetting.modalClickClose">
+            <el-form :model="menuModel" :rules="rules" ref="menuModel" label-width="100px"
+                     v-on:submit.native.prevent label-position="left" >
+                <el-form-item label="菜单标题" prop="title">
+                    <el-input v-model="menuModel.title"></el-input>
+                </el-form-item>
+                <el-form-item label="控制器名称" prop="controller">
+                    <el-input v-model="menuModel.controller"></el-input>
+                </el-form-item>
+                <el-form-item label="操作名称" prop="action">
+                    <el-input v-model="menuModel.action"></el-input>
+                </el-form-item>
+                <el-form-item label="图标css" prop="icon">
+                    <el-input v-model="menuModel.icon"></el-input>
+                </el-form-item>
+                <el-form-item label="选择父级菜单" prop="pid">
+                    <el-select v-model="menuModel.pid" placeholder="选择上级级菜单" class="">
+                        <el-option v-for="item in selectlist" :value="item.pid" :key="item.pid" :label="item.title+'|级别:'+item.level"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="相对排序编号" prop="order">
+                    <el-input v-model="menuModel.order"></el-input>
+                </el-form-item>
+                <el-button type="primary" plain v-on:click="doSubmit">提交</el-button>
+            </el-form>
+        </el-dialog>
+        <div class="col-12">
+            <div class="card card-outline card-info">
+
+                <div class="card-header">
+                    <h3 class="card-title">
+                        菜单管理
+                        <small>菜单列表</small>
+                    </h3>
+
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool btn-sm" data-card-widget="collapse" data-toggle="tooltip" data-content="最小化窗口">
+                            <i class="fa fa-minus"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="card-body">
+                    <button class="btn btn-sm btn-primary" v-on:click="openAddMenu">添加新菜单</button>
+                    <table class="layui-table" id="menulist"></table>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+
+@section TopHtml{
+
+
+}
+@section CSS {
+
+    <link href="~/lib/layui/css/layui.css" rel="stylesheet" />
+}
+@section Scripts{
+    <script src="~/lib/layui/layui.js"></script>
+    <script src="~/js/Manage/sysmenu.js"></script>
+    <script>
+//api
+let AllMenuAPI = '@Url.ActionLink("MenuList")';
+let MenuItemAPI = '@Url.ActionLink("MenuItem")';
+    </script>
+    <script>
+
+        layui.config({
+            base: '../lib/tree/js/',
+        })
+        var treeTable; var tree;
+        //col
+        let mycol = [
+            {
+                key: 'menuLevel', title: '菜单组类型', width: '150px', align: 'left',
+                template: function (item) {
+                    if (item.menuLevel == 0) return '<span class="text-danger m-0">侧边菜单标题</span>';
+                    if (item.menuLevel == 1) return '<span class="text-primary m-0">菜单项目</span>';
+                    if (item.menuLevel == 2) return '<span class="text-info m-0">系统内部操作</span>';
+                }
+            },
+            { key: 'title', title: '菜单标题', width: '200px', align: 'center', },
+            { key: 'controller', title: '控制器名称', width: '150px', align: 'center', },
+            { key: 'action', title: '操作名称', width: '120px', align: 'center', },
+            { key: 'icon', title: '图标', width: '100px', align: 'center', },
+            { key: 'order', title: '排序编号', width: '100px', align: 'center', },
+            {
+                title: '操作', align: 'center',
+                template: function (item) {
+                    return ' <a href="javascript:void(0)" lay-filter="edit">编辑</a> | <a href="javascript:void(0)" lay-filter="delete">删除</a>';
+                }
+            }
+        ];
+        let myapp = new Vue({
+            el: "#myapp",
+            data: {
+                menuModalSetting:{
+                    modalClickClose:false,
+                },
+                menuDialogTitle:"",                           
+                dialogVisible: false,
+                tabledata: null, 
+                menuModel: {
+                    id: 0,
+                    pid:0,
+                    title: "",
+                    icon: "",
+                    controller: "",
+                    action: "",
+                    menuLevel: 0,
+                    type: 0,
+                    order:0
+                },
+                rules: {
+                    title: ValidFormat.required,
+                    controller: ValidFormat.required,
+                }
+            },
+            watch: {
+                tabledata: function (newval) {
+                    if (newval != null && tree != null) { tree.data = newval;treeTable.render(tree);}
+                },
+            },
+            computed: {
+                selectlist: function () {
+                    return MakeSelectlist(this.tabledata);
+                },
+            },
+            methods: {
+                resetData() {
+                    this.menuModel = {id: 0, pid: 0, title: "", icon: "",controller: "", action: "",menuLevel: 0,type: 0, order: 0};
+                },
+                openAddMenu() {
+                    this.menuDialogTitle = "新增菜单";
+                    this.resetData();
+                    this.dialogVisible = true;                  
+                },
+                openEditMenu(item) {
+                    this.menuDialogTitle = "编辑菜单";
+                    this.resetData();
+                    this.menuModel = item;
+                    this.dialogVisible = true;
+                },
+                doSubmit() {
+                    this.selectlist.forEach(function (item) {
+                        if (item.pid == myapp.menuModel.pid) {
+                            myapp.menuModel.menuLevel = item.level;
+                        }
+                    });
+                    if (this.menuModel.id == 0) {
+                        //add
+                        PostPromise(MenuItemAPI, this.menuModel).then(data => {
+                            if (data.status) {
+                                this.dialogVisible = false;
+                                this.$message({
+                                    showClose: true,
+                                    message: data.message,
+                                    type: 'success',
+                                });
+                            } else {
+                                this.$message.error(data.message);
+                            }
+                        });
+                    } else {
+                        PutPromise(MenuItemAPI, this.menuModel).then(data => {
+                            if (data.status) {
+                                this.dialogVisible = false;
+                                this.$message({
+                                    showClose: true,
+                                    message: data.message,
+                                    type: 'success',
+                                });
+                            } else {
+                                this.$message.error(data.message);
+                            }
+                        });
+                    }
+                    GetPromise(AllMenuAPI).then((data) => {
+                        myapp.tabledata = data;
+                    });
+                },
+                doDelete(id) {
+                    DeletePromise(MenuItemAPI, { id: id }).then(data => {
+                        if (data.status) {
+                            this.$message({
+                                showClose: true,
+                                message: data.message,
+                                type: 'success',
+                            });
+                        } else {
+                            this.$message.error(data.message);
+                        }
+                    });
+                    GetPromise(AllMenuAPI).then((data) => {
+                        myapp.tabledata = data;
+                    });
+                },
+            },
+            beforeMount: function () {
+                GetPromise(AllMenuAPI).then((data) => {
+                    myapp.tabledata = data;
+                    layui.use('treeTable', function () {
+                        treeTable = layui.treeTable;
+                        tree = treeTable.render({
+                            elem: "#menulist",
+                            data: data,
+                            icon_key: 'menuLevel',
+                            cols: mycol
+                        });
+                        treeTable.on('tree(delete)', function (data) {
+                            myconfirm("确定要删除 项目标题:" + data.item.title + " 吗?", function () {
+                                myapp.doDelete(data.item.id);
+                            });
+                        });
+                        treeTable.on('tree(edit)', function (data) {
+                            myapp.openEditMenu(data.item);
+                            console.log(data.item);
+                        });
+                    });
+                });
+
+            },
+            mounted: function () {
+
+            },
+        });
+    </script>
+
+}

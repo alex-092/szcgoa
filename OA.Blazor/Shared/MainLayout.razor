@@ -1,0 +1,52 @@
+﻿@inherits LayoutComponentBase
+<MatAppBarContainer>
+    <MatAppBar Fixed="true">
+        <MatAppBarRow>
+            <MatAppBarSection>
+                <div class="my-start-menu-1 mat-elevation-z1">
+
+                    <MatList>
+                        <MatListItem>
+                            line item
+                        </MatListItem>
+                        <MatListDivider></MatListDivider>
+                        <MatListItem>
+                            line item
+                        </MatListItem>
+                        <MatListDivider></MatListDivider>
+                        <MatListItem>
+                            line item
+                        </MatListItem>
+                    </MatList>
+                </div>
+
+
+                
+                <MatAppBarTitle>数字城管办公自动化</MatAppBarTitle>
+            </MatAppBarSection>
+            <MatAppBarSection Align="@MatAppBarSectionAlign.End">
+                <OA.Blazor.Shared.Components.LoginControl />
+                <MatIconButton Icon="favorite"></MatIconButton>
+            </MatAppBarSection>
+        </MatAppBarRow>
+    </MatAppBar>
+
+    <MatAppBarContent>
+
+        <div class="content px-4">
+            @Body
+        </div>
+
+    </MatAppBarContent>
+</MatAppBarContainer>
+
+
+@code{
+    [Inject] IJSRuntime JS { get; set; }
+    async Task ClickMe()
+    {
+        await JS.InvokeAsync<string>("dropdown","show");
+    }
+}
+
+

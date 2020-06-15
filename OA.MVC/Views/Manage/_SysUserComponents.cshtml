@@ -1,0 +1,54 @@
+﻿
+    <script type="x-template" id="role-modal">
+        <el-dialog :title="title" :visible.sync="dialogvisible"  width="70%" :close-on-click-modal="ModalSetting.modalClickClose">
+            <div class="row">
+                <div class="card card-outline card-danger col-6 ">
+                    <div class="card-title">11</div>
+                    <div class="card-body p-0">
+                        <table id="extable"></table>
+                    </div>
+                </div>
+                <div class="card card-outline card-primary col-6 ">
+                    <div class="card-title">11</div>
+                    <div class="card-body p-0">
+                        <table id="intable"></table>
+                    </div>
+                </div>
+            </div>
+            <span slot="footer" class="dialog-footer">
+                <el-button v-on:click="$emit('modalcancel')">取 消</el-button>
+                <el-button type="primary" v-on:click="$emit('modalok')">确 定</el-button>
+            </span>
+        </el-dialog>
+    </script>
+<script>
+    console.log("comp");
+    Vue.component("rolemodal", {
+        template: "#role-modal",
+        props: ["title","dialogvisible"],
+        data(){
+            return {
+                ModalSetting: {
+                    modalClickClose: false,
+                },
+            }
+        },
+        created: function () {
+            layui.use(['table'], function () {
+                var table = layui.table;
+                inTable = table.render({
+                    elem: "#intable",
+                    cols: rolecols,
+                    data: [],
+                    text: { none: "该用户未设定角色" },
+                });
+                exTable = table.render({
+                    elem: "#extable",
+                    cols: rolecols,
+                    data: [],
+                    text: { none: "所有角色已经设定" },
+                });
+            });
+        },
+    });
+</script>

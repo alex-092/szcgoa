@@ -1,0 +1,213 @@
+﻿
+    <div class="row" id="myapp" v-cloak>
+
+        <el-dialog :title="roleModel.dialogTitle" :visible.sync="roleModel.dialogVisible"
+                   width="30%" :close-on-click-modal="roleModel.modalClickClose">
+            <el-form :model="roleModel.roleData" :rules="rules" ref="roleModel.roleData" label-width="130px"
+                     v-on:submit.native.prevent label-position="left">
+                <el-form-item label="角色名称" prop="rolename">
+                    <el-input v-model="roleModel.roleData.rolename"></el-input>
+                </el-form-item>
+                <el-form-item label="角色详细描述" prop="roledescript">
+                    <el-input v-model="roleModel.roleData.roledescript"></el-input>
+                </el-form-item>
+                <el-form-item label="选择权限级别" prop="level">
+                    <el-select v-model="roleModel.roleData.level" placeholder="选择权限级别" class="">
+                        <el-option value="0" label="系统超级管理员"></el-option>
+                        <el-option value="1" label="系统管理员"></el-option>
+                        <el-option value="2" label="系统审核员"></el-option>
+                        <el-option value="3" label="未设定"></el-option>
+                        <el-option value="4" label="值班长"></el-option>
+                        <el-option value="5" label="基本权限"></el-option>
+
+                    </el-select>
+                </el-form-item>
+                <el-button type="primary" plain v-on:click="doSubmit">提交</el-button>
+            </el-form>
+        </el-dialog>
+        <el-dialog :title="roleAccessModel.dialogTitle" :visible.sync="roleAccessModel.dialogVisible"
+                   width="20%" :close-on-click-modal="roleAccessModel.modalClickClose">
+            <el-tree :data="roleAccessModel.treeData" show-checkbox default-expand-all
+                     node-key="id" ref="tree" highlight-current :props="roleAccessModel.defaultProps">
+            </el-tree>
+            <span slot="footer" class="dialog-footer">
+                <el-button v-on:click="roleAccessModel.dialogVisible = false">取 消</el-button>
+                <el-button type="primary" v-on:click="setAccess">确 定</el-button>
+            </span>
+        </el-dialog>
+
+
+
+        <div class="col-12">
+            <div class="card card-outline card-info">
+                <div class="card-body">
+
+                    <el-button type="primary" class="p-2" v-on:click="addRole">新增角色</el-button>
+                    <el-table :data="roleTableData" style="width: 100%">
+                        <el-table-column prop="rolename" label="角色名" width="180">
+                        </el-table-column>
+                        <el-table-column prop="roledescript" label="角色描述"  width="300">
+                        </el-table-column>
+                        <el-table-column prop="level" label="角色权限级别" width="180">
+                        </el-table-column>
+                        <el-table-column fixed="right" label="操作">
+                            <template slot-scope="scope">
+                                <el-button v-on:click="accessModal(scope.row)" type="primary" plain size="mini">权限</el-button>
+                                <el-button v-on:click="editRole(scope.row)" type="primary" plain size="mini">修改</el-button>
+                                <el-button v-on:click="deleteRole(scope.row)" slot="reference" type="danger" plain size="mini">删除</el-button>
+                            </template>
+                        </el-table-column>
+                    </el-table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+@section TopHtml{
+}
+@section Scripts{
+    <script>
+        let AllRolesAPI = '@Url.ActionLink("RoleList")';
+        let RoleItemAPI = '@Url.ActionLink("RoleItem")';
+        let MenuListAPI = '@Url.ActionLink("MenuList")';
+        let RoleAccessAPI = '@Url.ActionLink("RoleAccess")';
+    </script>
+    <script>
+    let myapp = new Vue({
+        el: "#myapp",
+        data: {
+            roleTableData: null,
+            rules: {
+                rolename: ValidFormat.required,
+                roledescript: ValidFormat.required,
+                level: ValidFormat.required,
+            },
+            roleModel: {
+                roleData: null,
+                dialogTitle: "",
+                dialogVisible: false,
+                modalClickClose: false,
+            },
+            roleAccessModel: {
+                treeData: null,
+                selectRole: null,
+                selectKey:[],
+                dialogTitle: "未设置",
+                dialogVisible: false,
+                modalClickClose: false,
+                defaultProps: {
+                    children: 'children',
+                    label: 'label'
+                }
+            }
+        },
+        methods: {
+            accessModal(row) { 
+                this.roleAccessModel.dialogVisible = true;
+                let selectKey = [];
+                this.roleAccessModel.selectRole = row;
+                this.roleAccessModel.dialogTitle = row.rolename + "-编辑权限";
+                GetPromise(RoleAccessAPI, { roleid: row.id }).then(data => {
+                    if (data != null) {
+                        selectKey = data.split(',');
+                    }
+                    this.$refs.tree.setCheckedKeys(selectKey);
+                });
+                
+                
+            },
+            setAccess() {
+                PutPromise(RoleAccessAPI, {
+                    roleid: this.roleAccessModel.selectRole.id,
+                    access: this.$refs.tree.getCheckedKeys().join(",")
+                }).then(data => {
+                    if (data.status) {
+                        this.$message({
+                            showClose: true,
+                            message: data.message,
+                            type: 'success',
+                            duration:1000,
+                            onClose: elf => {
+                                this.roleAccessModel.dialogVisible = false;
+                            }
+                        });
+                    } else {
+                        this.$message.error(data.message);
+                    }
+                });
+
+            },
+            editRole(row) {
+                this.resetInput();
+                this.roleModel.roleData =row
+                this.roleModel.dialogTitle = "修改角色";
+                this.roleModel.dialogVisible = true;
+            },
+            addRole() {
+                this.resetInput();
+                this.roleModel.dialogTitle = "添加角色";
+                this.roleModel.dialogVisible = true;
+            },
+            deleteRole(row) {
+                if (confirm('是否删除' + row.rolename)) {
+                    DeletePromise(RoleItemAPI, { id:row.id }).then(data => {
+                        if (data.status) {
+                            this.$message({
+                                showClose: true,
+                                message: data.message,
+                                type: 'success',
+                            });
+                        } else {
+                            this.$message.error(data.message);
+                        }
+                    });
+                }
+            },
+            resetInput() {
+                this.roleModel.roleData =  { id:0,level:null,roledescript:"", rolename:"" };
+            },
+            doSubmit() {
+                if (this.roleModel.id == 0) {
+                    //add
+                    PostPromise(RoleItemAPI, this.roleModel.roleData ).then(data => {
+                        if (data.status) {
+                            this.dialogVisible = false;
+                            this.$message({
+                                showClose: true,
+                                message: data.message,
+                                type: 'success',
+                            });
+                        } else {
+                            this.$message.error(data.message);
+                        }
+                    });
+                } else {
+                    //edit
+                    PutPromise(RoleItemAPI, this.roleModel.roleData ).then(data => {
+                        if (data.status) {
+                            this.dialogVisible = false;
+                            this.$message({
+                                showClose: true,
+                                message: data.message,
+                                type: 'success',
+                            });
+                        } else {
+                            this.$message.error(data.message);
+                        }
+                    });
+                }
+            },
+        },
+        created: function () {
+            GetPromise(AllRolesAPI).then(data => {
+                this.roleTableData = data;
+            });
+            GetPromise(MenuListAPI, {type:"tree"}).then(data => {
+                this.roleAccessModel.treeData = data;
+            });
+            this.resetInput();
+        },
+    });
+    </script>
+
+}

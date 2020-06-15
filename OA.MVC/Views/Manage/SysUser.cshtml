@@ -1,0 +1,156 @@
+﻿
+    <div class="row" id="myapp" v-cloak>
+
+        <el-dialog :title="RoleModal.dialogTitle" :visible.sync="RoleModal.visable" width="70%" :close-on-click-modal="RoleModal.modalClickClose">
+            <div class="row">
+                <div class="card card-outline card-danger col-6 ">
+                    <div class="card-title">未设定的角色</div>
+                    <div class="card-body p-0">
+                        <el-table  :data="UserRoleModel.roleExData" style="width: 100%">
+                            <el-table-column prop="rolename" label="角色名称" width="120">
+                            </el-table-column>
+                            <el-table-column prop="roledescript" label="描述" width="180">
+                            </el-table-column>
+                            <el-table-column prop="level" label="级别" width="70" >
+                            </el-table-column>
+                            <el-table-column fixed="right" label="操作">
+                                <template slot-scope="scope">
+                                    <el-button v-on:click="editRole(scope.row)" type="text" size="mini">增加该角色</el-button>
+                                </template>
+                            </el-table-column>
+                        </el-table>
+                    </div>
+                </div>
+                <div class="card card-outline card-primary col-6 ">
+                    <div class="card-title">已拥有的角色</div>
+                    <div class="card-body p-0">
+                        <el-table  :data="UserRoleModel.roleInData" style="width: 100%">
+                            <el-table-column prop="rolename" label="角色名称" width="120">
+                            </el-table-column>
+                            <el-table-column prop="roledescript" label="描述" width="180">
+                            </el-table-column>
+                            <el-table-column prop="level" label="级别" width="70">
+                            </el-table-column>
+                            <el-table-column fixed="right" label="操作">
+                                <template slot-scope="scope">
+                                    <el-button v-on:click="editRole(scope.row)" type="text" size="mini">删除该角色</el-button>
+                                </template>
+                            </el-table-column>
+                        </el-table>
+                    </div>
+                </div>
+            </div>
+            <span slot="footer" class="dialog-footer">
+                <el-button v-on:click="RoleModal.visable = false">取 消</el-button>
+                <el-button type="primary" v-on:click="RoleModal.visable = false">确 定</el-button>
+            </span>
+        </el-dialog>
+
+        
+
+
+        <div class="col-12">
+            <div class="card card-outline card-info">
+                <div class="card-body">
+                    <el-table :data="userTableData" style="width: 100%">
+                        <el-table-column prop="displayName" label="姓名" width="180">
+                        </el-table-column>
+                        <el-table-column prop="account" label="账号" width="180">
+                        </el-table-column>
+                        <el-table-column prop="phone" label="电话">
+                        </el-table-column>
+                        <el-table-column prop="email" label="邮件">
+                        </el-table-column>
+                        <el-table-column prop="lockType" label="锁定">
+                        </el-table-column>
+                        <el-table-column prop="createTime" label="创建时间">
+                        </el-table-column>
+                        <el-table-column fixed="right" label="操作" width="150">
+                            <template slot-scope="scope">
+                                <el-button v-on:click="setRolesBtn(scope.row)" type="text" size="mini">设定角色</el-button>
+                                <el-button v-on:click="handleClick(scope.row)" type="text" size="mini">查看</el-button>
+                                <el-button type="text" size="mini">编辑</el-button>
+                            </template>
+                        </el-table-column>
+                    </el-table>
+                </div>
+            </div>
+        </div>
+    </div>
+@section CSS {
+    <link href="~/lib/layui/css/layui.css" rel="stylesheet" />
+}
+@section TopHtml{
+}
+@section Scripts{
+    <script src="~/lib/layui/layui.js"></script>
+    <script src="~/js/Manage/sysuser.js"></script>
+    <script>
+        let AllUsersAPI = '@Url.ActionLink("UserList")';
+        let UserItemAPI = '@Url.ActionLink("UserItem")';
+        let UserRolesAPI = '@Url.ActionLink("UserRoles")';
+        let RoleListAPI = '@Url.ActionLink("RoleList")';
+    </script>
+    <script>
+        let myapp = new Vue({
+            el: "#myapp",
+            data: {
+                userTableData: null,    
+                rolesList:null,
+                RoleModal: {
+                    modalClickClose: false,
+                    dialogTitle: "未取值",
+                    visable: false
+                },
+                UserRoleModel: {
+                    selectUser: null,
+                    roleInData: null,
+                    roleExData:null
+                },
+            },
+            methods: {
+                setRolesBtn(row) {
+                    this.RoleModal.visable = true;
+                    this.RoleModal.dialogTitle = "设定角色-用户："+row.displayName;
+                    this.refreshRolesModel(row);
+                },
+                editRole(row) {
+                    PutPromise(UserRolesAPI, { uid: this.UserRoleModel.selectUser.uid, roleid: row.id }).then(data => {
+                        this.$message(data.message);
+                        this.refreshRolesModel(this.UserRoleModel.selectUser);                       
+                    });
+                },
+                handleClick(row) {
+                    this.RoleModal.visable = true;
+                    this.refreshRolesModel(row);
+                    console.log(row);
+                },
+                refreshRolesModel(user) {
+                    this.UserRoleModel.selectUser = user;
+                    GetPromise(UserRolesAPI, {uid:user.uid}).then(data => {
+                        this.UserRoleModel.roleInData = data;
+                        if (this.rolesList != null) {
+                            this.UserRoleModel.roleExData = GetExclude(this.rolesList, data);
+                        }
+                    });
+
+                }
+            },
+            created: function () {
+                GetPromise(AllUsersAPI).then(data => {
+                    this.userTableData = data;
+                });
+                GetPromise(RoleListAPI).then(data => {
+                    this.rolesList = data;
+                });
+                
+            },
+            mounted: function () {
+                
+                //this.RoleModal.visable = false;
+                
+            }
+        });
+    </script>
+
+}

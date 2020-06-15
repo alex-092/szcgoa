@@ -1,0 +1,67 @@
+﻿@{@* CSRF-ajax全局配置代码c#部分 *@}
+@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Xsrf
+@functions{
+
+    public string GetAntiXsrfRequestToken()
+    {
+        return Xsrf.GetAndStoreTokens(Context).RequestToken;
+    }
+}
+@{@* CSRF-ajax全局配置代码c#部分 *@}
+
+
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>login</title>
+    <link href="~/lib/bootstrap-4.4.1/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/lib/element-ui/lib/theme-chalk/index.css" rel="stylesheet" />
+    <style>
+        * {
+            font-family: "Helvetica Neue",Helvetica,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","微软雅黑",Arial,sans-serif;
+        }
+        [v-cloak] {
+            display: none;
+        }
+
+        .fade-enter-active, .fade-leave-active {
+            transition: opacity 0.3s ease;
+        }
+
+        .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+            opacity: 0;
+        }
+    </style>
+    @RenderSection("CSS", required: false)
+</head>
+<body class="hold-transition sidebar-mini">
+
+    @RenderBody()
+
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    @{@* CSRF-ajax全局配置代码jq部分 *@}
+    <script>
+    var csrfToken = '@GetAntiXsrfRequestToken()';
+    (function (window, document, $) {
+        $.ajaxSetup({
+            headers: {
+                'RequestVerificationToken': csrfToken
+            }
+        });
+    })(window, document, jQuery);
+    </script>
+    @{@* CSRF-ajax全局配置代码jq部分 *@}
+
+    <script src="~/js/common.js"></script>
+    <script src="~/lib/bootstrap-4.4.1/js/bootstrap.bundle.min.js"></script>
+    <script src="~/lib/bootstrap-4.4.1/js/bootstrap.min.js"></script>
+    <script src="~/lib/vue/dist/vue.js"></script>
+    <script src="~/lib/element-ui/lib/index.js"></script>
+    @RenderSection("TopHtml", required: false)
+    @RenderSection("Scripts", required: false)
+</body>
+</html>
