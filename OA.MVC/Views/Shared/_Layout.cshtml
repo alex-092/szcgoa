@@ -11,16 +11,7 @@
 
 
 @{
-    var myHtml = new LayoutService();
-    string dispalyName = "未登录";
-    string userId = "0";
-    foreach (var claim in User.Claims)
-    {
-        if (claim.Type == ClaimTypes.GivenName)
-            dispalyName = claim.Value;
-        if (claim.Type == ClaimTypes.Sid)
-            userId = claim.Value;
-    }
+    var myHtml = new LayoutService(this.Context);
 }
 
 <!DOCTYPE html>
@@ -70,14 +61,14 @@
                 <li class="nav-item dropdown">
                     <a class="nav-link" data-toggle="dropdown" href="#" aria-expanded="true">
                         <i class="fa fa-bell"></i>
-                        <span class="">当前用户:@dispalyName</span>
+                        <span class="">当前用户:@myHtml.BC_UserDisplayName</span>
                     </a>
                     <div class="dropdown-menu dropdown-menu-right" style="left: inherit; right: 0px;">
                         <div class="dropdown-item text-center">
                             <button class="btn btn-primary btn-block">用户信息</button>
                         </div>
                         <div class="dropdown-item ">
-                            <a href='@Url.ActionLink("LogOut","Popup")' class="btn btn-danger btn-block">注销登录</a>
+                            <a href='@Url.ActionLink("LogOut","Account")' class="btn btn-danger btn-block">注销登录</a>
                         </div>
 
                     </div>
@@ -98,12 +89,12 @@
                         <img src="~/lib/AdminLTE-3.0.4/dist/img/user2-160x160.jpg" class="img-circle elevation-2" alt="User">
                     </div>
                     <div class="info">
-                        <a href="#" class="d-block">@dispalyName</a>
+                        <a href="#" class="d-block">@myHtml.BC_UserDisplayName</a>
                     </div>
                 </div>
                 <nav class="mt-2">
                     <ul class="nav nav-pills nav-sidebar flex-column nav-flat nav-child-indent" data-widget="treeview" role="menu" data-accordion="true">
-                        @myHtml.RenderSideBar(this.Context, LayoutService.HtmlType.Sidebar)
+                        @myHtml.RenderSideBar( LayoutService.HtmlType.Sidebar)
                     </ul>
                 </nav>
             </div>
@@ -115,13 +106,14 @@
                     <div class="row mb-0">
                         <div class="col-sm-6">
                             <ol class="breadcrumb float-sm-left">
-                                @myHtml.RenderSideBar(this.Context, LayoutService.HtmlType.Bread)
+                                @myHtml.RenderSideBar( LayoutService.HtmlType.Bread)
                             </ol>
                         </div>
                         <div class="col-sm-6 text-right">
-                            <span class="badge badge-success p-1" id="dataok"><i class="fa fa-check-circle" aria-hidden="true"></i> 页面加载完毕</span>
+                            <span class="badge badge-success p-1" id="dataok"  style="display:none"><i class="fa fa-check-circle" aria-hidden="true"></i> 页面加载完毕</span>
                             <span class="badge badge-primary p-1" id="datasuccess" style="display:none"><i class="fa fa-check" aria-hidden="true"></i> 数据请求成功</span>
                             <span class="badge badge-warning p-1" id="dataloading" style="display:none"><i class="fa fa-spinner fa-spin" aria-hidden="true"></i> 数据请求中</span>
+                            <span class="badge badge-danger p-1" id="dataerror" style="display:none"><i class="fa fa-times" aria-hidden="true"></i> 与服务器通讯失败</span>
                         </div>
                     </div>
                 </div>
@@ -165,16 +157,29 @@
     <script src="~/lib/element-ui/lib/index.js"></script>
     <script src="~/js/common.js"></script>
     <script>
+        function SetOneFlagShow(flag) {
+            $("#dataloading").hide();
+            $("#datasuccess").hide();
+            $("#dataerror").hide();
+            $("#dataok").hide();
+            $(flag).show();
+        }
         (function (window, document, $) {
             $.ajaxSetup({
-                beforeSend: function () {
-                    $("#dataok").hide();
-                    $("#dataloading").show();
+                beforeSend: function () {                 
+                    SetOneFlagShow("#dataloading");
                 },
-                complete: function () {
-                    $("#dataloading").hide();
-                    $("#datasuccess").show();
-                    setInterval(() => { $("#datasuccess").hide(); $("#dataok").show(); }, 2000);
+                complete: function (XMLHttpRequest, textStatus) {
+                    if (textStatus == "success") {
+                        SetOneFlagShow("#datasuccess");
+                        setTimeout(() => {
+                            SetOneFlagShow("#dataok");
+                        }, 2000);
+                    }
+                    if (textStatus == "error") {
+                        SetOneFlagShow("#dataerror");
+                    }
+                    
                 }
             });
         })(window, document, jQuery);

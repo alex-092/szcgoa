@@ -365,3 +365,4 @@ D:\MyCode\SZCGOA.v2\OA.MVC\obj\Debug\netcoreapp3.1\Razor\Views\Manage\SysMenu.cs
 D:\MyCode\SZCGOA.v2\OA.MVC\obj\Debug\netcoreapp3.1\Razor\Views\Manage\SysUser.cshtml.g.cs
 D:\MyCode\SZCGOA.v2\OA.MVC\obj\Debug\netcoreapp3.1\Razor\Views\Manage\_SysUserComponents.cshtml.g.cs
 D:\MyCode\SZCGOA.v2\OA.MVC\obj\Debug\netcoreapp3.1\Razor\Views\Manage\SysRole.cshtml.g.cs
+D:\MyCode\SZCGOA.v2\OA.MVC\obj\Debug\netcoreapp3.1\Razor\Views\Account\UnAuth.cshtml.g.cs

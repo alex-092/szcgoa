@@ -1,6 +1,7 @@
 ﻿
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.VisualBasic;
 using OA.Entitys;
 using OA.Entitys.OaAuthDB;
@@ -34,6 +35,8 @@ namespace OA.MVC.Controllers
         {
             if (User.Identity.IsAuthenticated)
             {
+                if(string.IsNullOrEmpty(ReturnUrl))
+                    return Redirect("/");
                 return Redirect(ReturnUrl);
             }
             return View();
@@ -58,6 +61,8 @@ namespace OA.MVC.Controllers
         {
             return View();
         }
+        
+        [Route("UnAuth", Name = "UnAuthrPage")]
         [HttpGet]
         public IActionResult UnAuth()
         {

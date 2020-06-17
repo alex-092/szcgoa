@@ -1,7 +1,6 @@
 ﻿using CommonLib.Libs;
 using OA.Entitys;
 using OA.Entitys.OaAuthDB;
-using OA.Entitys.OaMsgDB;
 using OA.Entitys.OaSyslogDB;
 using System;
 using System.Collections.Generic;

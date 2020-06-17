@@ -15,43 +15,17 @@ namespace OA.Entitys.OaMsgDB
         {
         }
 
-        public virtual DbSet<ConfigClaim> ConfigClaim { get; set; }
         public virtual DbSet<MsgContent> MsgContent { get; set; }
-        public virtual DbSet<Subscription> Subscription { get; set; }
-        public virtual DbSet<UserNotify> UserNotify { get; set; }
+        public virtual DbSet<MsgReader> MsgReader { get; set; }
+        public virtual DbSet<MsgSender> MsgSender { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
+
         }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<ConfigClaim>(entity =>
-            {
-                entity.ToTable("config_claim");
-
-                entity.Property(e => e.Id)
-                    .HasColumnName("id")
-                    .HasColumnType("int(11)");
-
-                entity.Property(e => e.Type)
-                    .HasColumnName("type")
-                    .HasColumnType("varchar(20)")
-                    .HasCharSet("utf8")
-                    .HasCollation("utf8_general_ci");
-
-                entity.Property(e => e.UserId)
-                    .HasColumnName("user_id")
-                    .HasColumnType("varchar(40)")
-                    .HasCharSet("utf8")
-                    .HasCollation("utf8_general_ci");
-
-                entity.Property(e => e.Value)
-                    .HasColumnName("value")
-                    .HasColumnType("varchar(20)")
-                    .HasCharSet("utf8")
-                    .HasCollation("utf8_general_ci");
-            });
-
             modelBuilder.Entity<MsgContent>(entity =>
             {
                 entity.ToTable("msg_content");
@@ -60,21 +34,33 @@ namespace OA.Entitys.OaMsgDB
                     .HasColumnName("id")
                     .HasColumnType("int(11)");
 
-                entity.Property(e => e.Action)
-                    .HasColumnName("action")
-                    .HasColumnType("int(4)")
-                    .HasComment("comment/like/post/update etc.");
+                entity.Property(e => e.Brief)
+                    .HasColumnName("brief")
+                    .HasColumnType("text")
+                    .HasCharSet("utf8")
+                    .HasCollation("utf8_general_ci");
 
                 entity.Property(e => e.Content)
                     .HasColumnName("content")
                     .HasColumnType("text")
-                    .HasComment("消息的内容")
+                    .HasCharSet("utf8")
+                    .HasCollation("utf8_general_ci");
+
+                entity.Property(e => e.CreateBy)
+                    .HasColumnName("create_by")
+                    .HasColumnType("varchar(40)")
                     .HasCharSet("utf8")
                     .HasCollation("utf8_general_ci");
 
                 entity.Property(e => e.CreateTime)
                     .HasColumnName("create_time")
                     .HasColumnType("int(11)");
+
+                entity.Property(e => e.DeleteBy)
+                    .HasColumnName("delete_by")
+                    .HasColumnType("varchar(40)")
+                    .HasCharSet("utf8")
+                    .HasCollation("utf8_general_ci");
 
                 entity.Property(e => e.DeleteTime)
                     .HasColumnName("delete_time")
@@ -84,26 +70,13 @@ namespace OA.Entitys.OaMsgDB
                     .HasColumnName("is_delete")
                     .HasColumnType("int(4)");
 
-                entity.Property(e => e.SenderUserid)
-                    .HasColumnName("sender_userid")
-                    .HasColumnType("varchar(40)")
-                    .HasCharSet("utf8")
-                    .HasCollation("utf8_general_ci");
+                entity.Property(e => e.Subtype)
+                    .HasColumnName("subtype")
+                    .HasColumnType("int(4)");
 
                 entity.Property(e => e.TargetId)
                     .HasColumnName("target_id")
                     .HasColumnType("int(11)");
-
-                entity.Property(e => e.TargetType)
-                    .HasColumnName("target_type")
-                    .HasColumnType("int(4)")
-                    .HasComment("1-user,2-meg-content,3-product");
-
-                entity.Property(e => e.TargetUserid)
-                    .HasColumnName("target_userid")
-                    .HasColumnType("varchar(40)")
-                    .HasCharSet("utf8")
-                    .HasCollation("utf8_general_ci");
 
                 entity.Property(e => e.Title)
                     .HasColumnName("title")
@@ -113,50 +86,12 @@ namespace OA.Entitys.OaMsgDB
 
                 entity.Property(e => e.Type)
                     .HasColumnName("type")
-                    .HasColumnType("int(4)")
-                    .HasComment("消息的类型，1: 公告 Announce，2: 提醒 Remind，3：信息 Message,4 sysmessage");
-
-                entity.Property(e => e.UpdateTime)
-                    .HasColumnName("update_time")
-                    .HasColumnType("int(11)");
+                    .HasColumnType("int(4)");
             });
 
-            modelBuilder.Entity<Subscription>(entity =>
+            modelBuilder.Entity<MsgReader>(entity =>
             {
-                entity.ToTable("subscription");
-
-                entity.Property(e => e.Id)
-                    .HasColumnName("id")
-                    .HasColumnType("int(11)");
-
-                entity.Property(e => e.Action)
-                    .HasColumnName("action")
-                    .HasColumnType("varchar(20)")
-                    .HasCharSet("utf8")
-                    .HasCollation("utf8_general_ci");
-
-                entity.Property(e => e.CreateTime)
-                    .HasColumnName("create_time")
-                    .HasColumnType("int(11)");
-
-                entity.Property(e => e.TargetId)
-                    .HasColumnName("target_id")
-                    .HasColumnType("int(11)");
-
-                entity.Property(e => e.TargetType)
-                    .HasColumnName("target_type")
-                    .HasColumnType("tinyint(4)");
-
-                entity.Property(e => e.UserId)
-                    .HasColumnName("user_id")
-                    .HasColumnType("varchar(40)")
-                    .HasCharSet("utf8")
-                    .HasCollation("utf8_general_ci");
-            });
-
-            modelBuilder.Entity<UserNotify>(entity =>
-            {
-                entity.ToTable("user_notify");
+                entity.ToTable("msg_reader");
 
                 entity.Property(e => e.Id)
                     .HasColumnName("id")
@@ -168,14 +103,57 @@ namespace OA.Entitys.OaMsgDB
 
                 entity.Property(e => e.IsRead)
                     .HasColumnName("is_read")
-                    .HasColumnType("tinyint(4)");
+                    .HasColumnType("int(4)");
 
                 entity.Property(e => e.MsgId)
                     .HasColumnName("msg_id")
                     .HasColumnType("int(11)");
 
-                entity.Property(e => e.UserId)
-                    .HasColumnName("user_id")
+                entity.Property(e => e.SenderId)
+                    .HasColumnName("sender_id")
+                    .HasColumnType("varchar(40)")
+                    .HasCharSet("utf8")
+                    .HasCollation("utf8_general_ci");
+
+                entity.Property(e => e.Status)
+                    .HasColumnName("status")
+                    .HasColumnType("int(4)");
+
+                entity.Property(e => e.Uid)
+                    .HasColumnName("uid")
+                    .HasColumnType("varchar(40)")
+                    .HasCharSet("utf8")
+                    .HasCollation("utf8_general_ci");
+            });
+
+            modelBuilder.Entity<MsgSender>(entity =>
+            {
+                entity.ToTable("msg_sender");
+
+                entity.Property(e => e.Id)
+                    .HasColumnName("id")
+                    .HasColumnType("int(11)");
+
+                entity.Property(e => e.CreateTime)
+                    .HasColumnName("create_time")
+                    .HasColumnType("int(11)");
+
+                entity.Property(e => e.MsgId)
+                    .HasColumnName("msg_id")
+                    .HasColumnType("int(11)");
+
+                entity.Property(e => e.ReaderId)
+                    .HasColumnName("reader_id")
+                    .HasColumnType("varchar(40)")
+                    .HasCharSet("utf8")
+                    .HasCollation("utf8_general_ci");
+
+                entity.Property(e => e.Status)
+                    .HasColumnName("status")
+                    .HasColumnType("int(4)");
+
+                entity.Property(e => e.Uid)
+                    .HasColumnName("uid")
                     .HasColumnType("varchar(40)")
                     .HasCharSet("utf8")
                     .HasCollation("utf8_general_ci");

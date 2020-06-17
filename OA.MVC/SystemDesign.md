@@ -26,14 +26,13 @@
 		- 用户项目 UserItem GPPD
 		- 用户角色 UserRoles GPPD
 		
-	- 角色管理 SysRole
+	- 角色权限管理 SysRole
 	>API
 		- 角色列表 RoleList Get
 		- 角色项目 RoleItem GPPD
 		- 角色权限 RoleAccess GP
 
-	- 权限组管理 AuthrGroup
-	- 角色组绑定 RoleGroup
+
 
 #### 个人中心 Home Controller
 	

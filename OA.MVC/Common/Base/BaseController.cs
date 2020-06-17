@@ -2,16 +2,19 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace OA.MVC.Common.Base
 {
     public class BaseController : Controller
     {
-        protected string BC_UserSubID { get { return TryGetCliamValue("sub"); } }
-        protected string BC_UserDisplayName { get { return TryGetCliamValue("given_name"); } }
-        protected string BC_UserAccount { get { return TryGetCliamValue("name"); } }
+        protected string BC_UserSubID { get { return TryGetCliamValue(ClaimTypes.Sid); } }
+        protected string BC_UserDisplayName { get { return TryGetCliamValue(ClaimTypes.GivenName); } }
+        protected string BC_UserAccount { get { return TryGetCliamValue(ClaimTypes.Name); } }
         protected string BC_ActivePath { get { return HttpContext.Request.Path.ToString(); } }
+        protected string BC_ActiveController { get { return TryGetRouteValue("controller"); } }
+        protected string BC_ActiveAction { get { return TryGetRouteValue("action"); } }
         protected string BC_ClientIP { get { return HttpContext.Connection.RemoteIpAddress.ToString(); } }
         protected bool BC_IsAjax { get { return HttpContext.Request.Headers.ContainsKey("x-requested-with"); } }
 
@@ -33,7 +36,15 @@ namespace OA.MVC.Common.Base
             }
             return "NotFound";
         }
-
+        private string TryGetRouteValue(string type)
+        {
+            object result;
+            if(HttpContext.Request.RouteValues.TryGetValue(type,out result))
+            {
+                return result.ToString();
+            }
+            return "";
+        }
     }
 
 

@@ -19,7 +19,6 @@
 
   <ItemGroup>
     <Folder Include="Core\Task\" />
-    <Folder Include="Core\新文件夹\" />
   </ItemGroup>
 
 </Project>

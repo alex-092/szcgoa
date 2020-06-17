@@ -31,6 +31,38 @@ namespace OA.Entitys
             LOG_INFO,       //Informational: informational messages
             LOG_DEBUG       //Debug: debug-level messages
         }
+        public enum MessageSenderStatus
+        {
+            NORMAL,  //正常发送的普通信息
+            NEED_CONFIRM, //需要接收者确认的信息
+        }
+        public enum MessageReaderStatus
+        {
+            NORMAL,  //正常接受的普通信息
+            BE_TOP,  //用户设定置顶接受的信息
+        }
+        public enum MessageContentType
+        {
+            USER_MESSAGE,  //普通用户邮件信息
+            SYSTEM_MESSAGE,  //系统提示信息
+            USER_ANNOUNCE,   //权限用户发布的公告
+            SYSTEM_ANNOUNCE,  //系统发布的公告
+            USER_ARTICLE,    //用户发布的文章
+            COMMENT,        //对指定信息的评论
+        }
+        public enum MessageContentSubType
+        {
+            NORMAL,  //信息标准状态
+            DRAFT,  //草稿状态
+        }
+
+    }
+    public static class SysStringTemplate
+    {
+        public static string MakeSysMessage(string sender)
+        {
+            return @""+sender;
+        }
     }
     public static class BaseStringType
     {

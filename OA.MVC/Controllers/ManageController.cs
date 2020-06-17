@@ -9,10 +9,12 @@ using OA.Services.Core.Menu;
 using Microsoft.AspNetCore.Authorization;
 using OA.Services.Auth.User;
 using OA.Services.Auth.Roles;
+using OA.MVC.Common.Filters;
 
 namespace OA.MVC.Controllers
 {
     [Authorize]
+    //[AuthRFilter]
     public class ManageController:BaseController
     {
         private readonly IMenuService _menu;
